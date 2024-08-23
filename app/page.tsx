@@ -13,16 +13,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 
-const tags = Array.from({ length: 50 }).map(
-  (_, i, a) =>
-    `v1.2.0-beta.${
-      a.length - i
-    }`
-);
 
 export default function Home() {
+  const [ingredients, setIngredients] = useState<String[]>([]);
+  const [text, setText] = useState("");
+
+  const handleAdd = () => {
+    if (text) {
+      setText("");
+      setIngredients([...ingredients, text]);
+    }
+  }
+
+  const handleDelete = (index: number) => {
+    setIngredients(ingredients.filter((_, i) => i !== index));
+  }
+
+  const handleGenerate = async () => {
+    
+  }
+
   return (
     <main className="flex min-h-screen w-screen flex-col bg-background">
       <Navbar />
@@ -34,8 +47,8 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <div className="flex gap-4">
-              <Input type="ingredients" placeholder="Ingedient" />
-              <Button>Add</Button>
+              <Input value={text} placeholder="Ingredient" onChange={(e) => setText(e.target.value)} />
+              <Button onClick={handleAdd}>Add</Button>
             </div>
             <div className="my-4">
               <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight my-2">
@@ -43,10 +56,13 @@ export default function Home() {
               </h3>
               <ScrollArea className="h-72 w-full rounded-md border text-wrap">
                 <div className="p-4">
-                  {tags.map((tag) => (
+                  {ingredients.map((ingredient, index) => (
                     <>
-                      <div key={tag} className="text-sm">
-                        {tag}
+                      <div key={index} className="text-sm flex justify-between items-center">
+                        <div>
+                          {ingredient}
+                        </div>
+                        <Button variant="ghost" onClick={() => handleDelete(index)}>x</Button>
                       </div>
                       <Separator className="my-2" />
                     </>
