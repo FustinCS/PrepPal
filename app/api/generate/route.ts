@@ -7,14 +7,20 @@ import { createClient } from 'pexels';
 import dotenv from 'dotenv';
 
 const systemPrompt = `
-You are a service that recommends meals based on a list of ingredients provided. I need 8 meal recommendations, each with the following details:
+You will be provided with a list of ingredients. Based on these ingredients, you are to generate a list of popular dishes that can be made using them. 
+The dishes must be widely recognized and have multiple online sources that provide recipes for the exact same dish name. 
+Avoid suggesting dishes that are obscure or made up.
+
+Remember: The goal is to provide a popular, well documented, and satisfying meal plan that is both practical and enjoyable.
+
+Please provide 8 meals.
+
+The criteria is as followed: 
 
 Meal Name: A descriptive name of the meal.
 Calorie Count: The approximate calorie count per serving.
 Short Description: A brief overview of the meal, including key ingredients and flavors.
 Link: A direct URL in https:// format to the recipe or source where the meal can be found.
-
-These meals must be very popular and cannot be something obscure.
 
 Return in the following JSON format where "meals" will be an array of objects:
 {
