@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { ToggleTheme } from "../toggle-theme";
-import { Button } from "../button";
 
 export function Navbar() {
   return (
