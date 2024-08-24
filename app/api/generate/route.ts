@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import axios from "axios";
-import * as cheerio from 'cheerio';
 import { Meal } from '@/utils/types';
 import { createClient } from 'pexels';
 import dotenv from 'dotenv';
@@ -12,15 +10,16 @@ The dishes must be widely recognized and have multiple online sources that provi
 Avoid suggesting dishes that are obscure or made up.
 
 Remember: The goal is to provide a popular, well documented, and satisfying meal plan that is both practical and enjoyable.
+REMEMBER: THE GOAL IS TO NOT MAKE ANYTHING UP. ONLY SUGGEST DISHES THAT ARE WELL KNOWN AND HAVE MULTIPLE ONLINE SOURCES THAT PROVIDE RECIPES FOR THE EXACT SAME DISH NAME.
 
 Please provide 8 meals.
+DO NOT have duplicates in the list.
 
 The criteria is as followed: 
 
 Meal Name: A descriptive name of the meal.
 Calorie Count: The approximate calorie count per serving.
 Short Description: A brief overview of the meal, including key ingredients and flavors.
-Link: A direct URL in https:// format to the recipe or source where the meal can be found.
 
 Return in the following JSON format where "meals" will be an array of objects:
 {
@@ -29,7 +28,6 @@ Return in the following JSON format where "meals" will be an array of objects:
             "name": str,
             "calories": int,
             "description": str,
-            "link": str,
             "image": str
         }
     ]

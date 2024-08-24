@@ -28,15 +28,10 @@ export function IngredientItem({currentMeal}: IngredientItemProps) {
           {currentMeal.name}
         </h4>
         <Separator />
-        <div className="flex justify-between items-center">
+        <div className="flex items-center">
           <h4 className="scroll-m-20 text-xl font-semibold tracking-tight py-4">
             {`${currentMeal.calories} calories`}
           </h4>
-          <Link href="/">
-            <Button>
-              <ExternalLinkIcon />
-            </Button>
-          </Link>
         </div>
         <ScrollArea className="h-[100px] w-full">
           {currentMeal.description}
