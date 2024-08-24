@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import { Inter as FontSans } from "next/font/google";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { createContext, useContext } from "react";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 import { cn } from "@/lib/utils";
 import { MealsProvider } from "@/components/meals-context";
@@ -38,6 +39,7 @@ export default function RootLayout({
         >
           <MealsProvider>{children}</MealsProvider>
         </ThemeProvider>
+        <GoogleAnalytics gaId="G-HT10P1BM9Z" />
       </body>
     </html>
   );
