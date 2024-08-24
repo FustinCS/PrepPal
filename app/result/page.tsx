@@ -3,8 +3,7 @@
 import { Navbar } from "@/components/ui/custom/navbar";
 import { motion } from "framer-motion";
 import { IngredientItem } from "@/components/ui/custom/ingredient-item";
-import { Meal } from "../utils/types";
-import { useState } from "react";
+import { useMeals } from "@/components/meals-context";
 
 const container = {
   visible: {
@@ -25,7 +24,9 @@ const item = {
   },
 };
 
-export default function ResultPage(meals: Meal[]) {
+export default function ResultPage() {
+  const {meals, setMeals} = useMeals();
+
   return (
     <main className="flex min-h-screen flex-col bg-background">
       <Navbar />
@@ -37,30 +38,13 @@ export default function ResultPage(meals: Meal[]) {
             initial="hidden"
             animate="visible"
           >
-            <motion.li variants={item}>
-              <IngredientItem />
-            </motion.li>
-            <motion.li variants={item}>
-              <IngredientItem />
-            </motion.li>
-            <motion.li variants={item}>
-              <IngredientItem />
-            </motion.li>
-            <motion.li variants={item}>
-              <IngredientItem />
-            </motion.li>
-            <motion.li variants={item}>
-              <IngredientItem />
-            </motion.li>
-            <motion.li variants={item}>
-              <IngredientItem />
-            </motion.li>
-            <motion.li variants={item}>
-              <IngredientItem />
-            </motion.li>
-            <motion.li variants={item}>
-              <IngredientItem />
-            </motion.li>
+            {meals.map((meal, index) => {
+              return (
+                <motion.li key={index} variants={item}>
+                <IngredientItem currentMeal={meal} />
+              </motion.li>
+              )
+            })}
           </motion.ul>
         </div>
       </div>

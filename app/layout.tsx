@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { Inter as FontSans } from "next/font/google";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { createContext, useContext } from "react";
 
 import { cn } from "@/lib/utils";
+import { MealsProvider } from "@/components/meals-context";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -34,7 +36,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <MealsProvider>{children}</MealsProvider>
         </ThemeProvider>
       </body>
     </html>

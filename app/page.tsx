@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/ui/custom/navbar";
 import { Input } from "@/components/ui/input";
-import { ToggleTheme } from "@/components/ui/toggle-theme";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Card,
@@ -15,11 +14,17 @@ import {
 } from "@/components/ui/card";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
-
+import { useRouter } from 'next/navigation'
+import { useMeals } from "@/components/meals-context";
 
 export default function Home() {
   const [ingredients, setIngredients] = useState<String[]>([]);
   const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const {meals, setMeals} = useMeals();
+  const router = useRouter();
+  
+  
 
   const handleAdd = () => {
     if (text) {
@@ -33,7 +38,26 @@ export default function Home() {
   }
 
   const handleGenerate = async () => {
-    
+    setLoading(true);
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ingredients }),
+    })
+
+    if (response.ok) {
+      const data = await response.json();
+      setMeals(data);
+      router.push('/result');
+      
+    }
+    else {
+      alert("Failed to generate meals");
+    }
+    setLoading(false);
+
   }
 
   return (
@@ -73,7 +97,7 @@ export default function Home() {
             </div>
           </CardContent>
           <CardFooter className="flex">
-            <Button className="flex-1">Generate</Button>
+            <Button className="flex-1" disabled={loading} onClick={handleGenerate}>Generate</Button>
           </CardFooter>
         </Card>
       </div>
