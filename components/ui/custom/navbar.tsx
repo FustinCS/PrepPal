@@ -3,6 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { ToggleTheme } from "../toggle-theme";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   return (
@@ -10,12 +12,20 @@ export function Navbar() {
       <div>
         <Link href="/">
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-            AI Meal Suggestions
+            PrepPal
           </h3>
         </Link>
       </div>
-      <div>
+      <div className="flex gap-4 items-center">
         <ToggleTheme />
+        <SignedOut>
+          <Button>
+            <SignInButton>Get Started</SignInButton>
+          </Button>
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
     </nav>
   );
