@@ -8,7 +8,7 @@ import { useMeals } from "@/components/meals-context";
 const container = {
   visible: {
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.2,
     },
   },
 };
@@ -40,7 +40,7 @@ export default function ResultPage() {
           >
             {meals.map((meal, index) => {
               return (
-                <motion.li key={index} variants={item}>
+              <motion.li key={index} variants={item}>
                 <IngredientItem currentMeal={meal} />
               </motion.li>
               )

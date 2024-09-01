@@ -7,12 +7,41 @@ import { Button } from "../button";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { ScrollArea } from "../scroll-area";
 import { Meal } from "@/utils/types";
-
+import { useUser } from "@clerk/nextjs";
+import { db } from "@/firebase";
+import { writeBatch } from "@firebase/firestore";
+import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { useState } from "react";
+import { CheckIcon } from "@radix-ui/react-icons";
 interface IngredientItemProps {
   currentMeal: Meal;
+  noSave?: boolean;
 }
 
-export function IngredientItem({currentMeal}: IngredientItemProps) {
+export function IngredientItem({
+  currentMeal,
+  noSave = false,
+}: IngredientItemProps) {
+  const { isLoaded, isSignedIn, user } = useUser();
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = async () => {
+    if (!user) {
+      alert("Not signed in!");
+      return;
+    }
+
+    const userDocRef = doc(db, "users", user.id);
+    const mealsCollectionRef = collection(userDocRef, "meals");
+    try {
+      await addDoc(mealsCollectionRef, currentMeal);
+      setSaved(true);
+    } catch (error) {
+      console.error("Error adding meal: ", error);
+      alert("Failed to save meal.");
+    }
+  };
+
   return (
     <Card className="h-[550px] w-[350px] bg-card text-card-foreground shadow flex flex-col overflow-hidden">
       <AspectRatio ratio={16 / 9}>
@@ -37,9 +66,21 @@ export function IngredientItem({currentMeal}: IngredientItemProps) {
           {currentMeal.description}
         </ScrollArea>
       </CardContent>
-      <CardFooter>
-        <Button className="w-full">Save</Button>
-      </CardFooter>
+      {noSave ? (
+        <></>
+      ) : (
+        <CardFooter className="flex justify-center">
+          {saved ? (
+            <div className="flex justify-center">
+              <CheckIcon className="text-green-600 size-10" />
+            </div>
+          ) : (
+            <Button className="w-full" onClick={handleSave}>
+              Save
+            </Button>
+          )}
+        </CardFooter>
+      )}
     </Card>
   );
 }

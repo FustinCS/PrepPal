@@ -16,7 +16,7 @@ import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { useMeals } from "@/components/meals-context";
-import { auth } from '@clerk/nextjs'
+import { useAuth } from "@clerk/nextjs";
 
 export default function Home() {
   const [ingredients, setIngredients] = useState<String[]>([]);
@@ -24,6 +24,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const { meals, setMeals } = useMeals();
   const router = useRouter();
+  const { isSignedIn } = useAuth();
 
   const handleAdd = () => {
     if (text) {
@@ -39,13 +40,11 @@ export default function Home() {
   const handleGenerate = async () => {
     setLoading(true);
 
-    const { userId } = auth();
-    if (!userId) {
-      alert("Please sign in");
+    if (!isSignedIn) {
+      alert("Please sign in!");
       setLoading(false);
       return;
     }
-
 
     if (ingredients.length === 0) {
       alert("Please add ingredients");

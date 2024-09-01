@@ -17,13 +17,17 @@ export function Navbar() {
         </Link>
       </div>
       <div className="flex gap-4 items-center">
-        <ToggleTheme />
         <SignedOut>
+          <ToggleTheme />
           <Button>
             <SignInButton>Get Started</SignInButton>
           </Button>
         </SignedOut>
         <SignedIn>
+          <Link href="/recipes">
+            <Button variant="ghost">Recipes</Button>
+          </Link>
+          <ToggleTheme />
           <UserButton />
         </SignedIn>
       </div>
