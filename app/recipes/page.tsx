@@ -2,6 +2,7 @@
 import { IngredientItem } from "@/components/ui/custom/ingredient-item";
 import { Navbar } from "@/components/ui/custom/navbar";
 import { db } from "@/firebase";
+import { useDonationStatus } from "@/hooks/useDonationStatus";
 import { Meal } from "@/utils/types";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -35,6 +36,7 @@ const item = {
 export default function RecipesPage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [storedMeals, setStoredMeals] = useState<Meal[]>([]);
+  const donated = useDonationStatus();
 
   useEffect(() => {
     async function getStoredMeals() {
@@ -50,11 +52,25 @@ export default function RecipesPage() {
       });
       setStoredMeals(meals);
     }
+
     getStoredMeals();
   }, [user]);
 
   if (!isLoaded || !isSignedIn) {
     return <></>;
+  }
+
+  if (!donated) {
+    return (
+      <main className="flex min-h-screen flex-col bg-background">
+        <Navbar />
+        <div className="flex-1 flex justify-center items-center">
+          <h1 className="text-4xl font-bold text-center">
+            Please donate to view this page
+          </h1>
+        </div>
+      </main>
+    );
   }
 
   return (

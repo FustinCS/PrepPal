@@ -7,27 +7,38 @@ import { Button } from "../button";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { ScrollArea } from "../scroll-area";
 import { Meal } from "@/utils/types";
-import { useUser } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 import { db } from "@/firebase";
 import { writeBatch } from "@firebase/firestore";
 import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { CheckIcon } from "@radix-ui/react-icons";
+import { useDonationStatus } from "@/hooks/useDonationStatus";
+import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
+import { DialogHeader } from "../dialog";
 interface IngredientItemProps {
   currentMeal: Meal;
   noSave?: boolean;
+  setOpenDonate?: (open: boolean) => void;
 }
 
 export function IngredientItem({
   currentMeal,
   noSave = false,
+  setOpenDonate = () => {},
 }: IngredientItemProps) {
   const { isLoaded, isSignedIn, user } = useUser();
   const [saved, setSaved] = useState(false);
+  const donated = useDonationStatus();
 
   const handleSave = async () => {
     if (!user) {
       alert("Not signed in!");
+      return;
+    }
+
+    if (!donated) {
+      setOpenDonate!(true);
       return;
     }
 
@@ -43,6 +54,7 @@ export function IngredientItem({
   };
 
   return (
+    <>
     <Card className="h-[550px] w-[350px] bg-card text-card-foreground shadow flex flex-col overflow-hidden">
       <AspectRatio ratio={16 / 9}>
         <Image
@@ -82,5 +94,6 @@ export function IngredientItem({
         </CardFooter>
       )}
     </Card>
+    </>
   );
 }

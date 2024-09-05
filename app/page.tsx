@@ -12,19 +12,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { useMeals } from "@/components/meals-context";
-import { useAuth } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import getStripe from "@/utils/get-stripe";
 
 export default function Home() {
+  const { isLoaded, isSignedIn, user } = useUser();
   const [ingredients, setIngredients] = useState<String[]>([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const { meals, setMeals } = useMeals();
+  const [open, setOpen] = useState(false);
+  const [openDonate, setOpenDonate] = useState(false);
   const router = useRouter();
-  const { isSignedIn } = useAuth();
 
   const handleAdd = () => {
     if (text) {
@@ -40,8 +50,8 @@ export default function Home() {
   const handleGenerate = async () => {
     setLoading(true);
 
-    if (!isSignedIn) {
-      alert("Please sign in!");
+    if (!user) {
+      setOpen(true);
       setLoading(false);
       return;
     }
@@ -63,17 +73,48 @@ export default function Home() {
     if (response.ok) {
       const data = await response.json();
       setMeals(data);
-      router.push("/result");
+      router.push("/generated");
     } else {
       alert("Failed to generate meals");
     }
     setLoading(false);
   };
 
+  const handleDonate = async () => {
+    if (!user) {
+      setOpenDonate(true);
+      return;
+    }
+
+    const checkoutSession = await fetch('/api/checkout_session', {
+      method: 'POST',
+      headers: {
+        origin: 'http://localhost:3000',
+      },
+    })
+
+    const checkoutSessionJson = await checkoutSession.json();
+
+    if (checkoutSessionJson.statusCode === 500) {
+      console.error(checkoutSessionJson.message);
+      return;
+    }
+
+    const stripe = await getStripe();
+    const {error} = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
+    })
+
+    if (error) {
+      console.error(error.message);
+    }
+
+  }
+
   return (
     <main className="flex min-h-screen w-screen flex-col bg-background">
       <Navbar />
-      <div className="flex-1 flex justify-center items-center p-8">
+      <div className="flex-1 flex flex-col justify-center items-center p-8 gap-8">
         <Card className="w-full lg:w-[750px] bg-card text-card-foreground shadow">
           <CardHeader>
             <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl text-center">
@@ -130,7 +171,46 @@ export default function Home() {
             </Button>
           </CardFooter>
         </Card>
+        <Card className="w-full lg:w-[500px] bg-card text-card-foreground shadow">
+          <CardHeader>
+            <h4 className="scroll-m-20 text-xl font-semibold tracking-tight text-center">
+              Donations
+            </h4>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+                Donations are always appreciated. If you like this project and
+                want to see this site still running, feel free to donate. Thank
+                you! (P.S. by donating, you will get access to the recipe storage feature)
+            </CardDescription>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <Button className="flex-auto" onClick={handleDonate}>Donate</Button>
+          </CardFooter>
+        </Card>
       </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign In Required</DialogTitle>
+          </DialogHeader>
+          <p>You need to be signed in to access this feature.</p>
+          <SignInButton>
+            <Button>Sign In</Button>
+          </SignInButton>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={openDonate} onOpenChange={setOpenDonate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign In Required</DialogTitle>
+          </DialogHeader>
+          <p>In order to get the benefits from donating, you need to be signed in.</p>
+          <SignInButton>
+            <Button>Sign In</Button>
+          </SignInButton>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }

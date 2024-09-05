@@ -19,9 +19,9 @@ export function Navbar() {
       <div className="flex gap-4 items-center">
         <SignedOut>
           <ToggleTheme />
-          <Button>
-            <SignInButton>Get Started</SignInButton>
-          </Button>
+          <SignInButton>
+            <Button>Get Started</Button>
+          </SignInButton>
         </SignedOut>
         <SignedIn>
           <Link href="/recipes">
